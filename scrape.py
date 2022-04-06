@@ -1,20 +1,26 @@
+from urllib import request
 import requests
 from bs4 import BeautifulSoup
 
 url = 'https://www.imdb.com/list/ls055386972/'
-response = requests.get(url, headers={ "Accept-Language": "en-US"}).content
-# print(response)
 
-soup = BeautifulSoup(response, 'html.parser')
+response = requests.get(url, headers={'Accept-Language': 'en-US'})
 
-# print(soup.title.text)
+# print(response.content)
 
-movies_list = []
+soup = BeautifulSoup(response.content, 'html.parser')
 
-movies = soup.find_all('div', class_='lister-item')
+# print(soup.find('h1').string)
+movies_info = []
+movies = soup.find_all('div', class_='lister-item-content')
+
 for movie in movies:
-    title = movie.find("h3").find("a").text
-    duration = movie.find("span", class_="runtime").text.strip(" min")
-    movies_list.append({'title': title, 'duration': duration})
+    title = movie.find('h3').find('a').string
+    duration = int(movie.find('span', class_='runtime').string.strip(' min'))
+    movie_info = {
+        'title': title,
+        'duration': duration
+    }
+    movies_info.append(movie_info)
 
-print(movies_list)
+print(movies_info)
